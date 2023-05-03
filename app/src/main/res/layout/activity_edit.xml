@@ -5,12 +5,14 @@
 
     <EditText
         android:id="@+id/etName"
+        android:nextFocusDown="@+id/etSurname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Имя"/>
 
     <EditText
         android:id="@+id/etSurname"
+        android:nextFocusDown="@+id/etNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/etName"
