@@ -1,6 +1,7 @@
 package com.example.contactsapp.data
 
 import com.example.contactsapp.data.module.Contact
+import com.example.contactsapp.data.module.FakeContact
 import io.realm.Realm
 import io.realm.kotlin.deleteFromRealm
 import java.util.*
@@ -41,5 +42,24 @@ class ContactRepositoryImpl(private val realm: Realm) : ContactRepository {
                 contact.deleteFromRealm()
             }
         }
+    }
+
+    override fun addContacts(contact: FakeContact) {
+        realm.executeTransaction {
+            it.createObject(Contact::class.java, UUID.randomUUID().toString()).apply {
+                this.name = contact.name
+                this.surname = contact.surname
+                this.number = contact.phone
+            }
+        }
+    }
+
+    override fun getAllContacts(): MutableList<FakeContact> {
+        val result = mutableListOf<FakeContact>()
+        val contacts = realm.where(Contact::class.java).findAll()
+        contacts.forEach { contact ->
+            result.add(FakeContact(contact.name, contact.surname, contact.number))
+        }
+        return result
     }
 }

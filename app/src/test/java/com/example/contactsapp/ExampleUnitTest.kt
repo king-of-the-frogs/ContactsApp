@@ -2,6 +2,7 @@ package com.example.contactsapp
 
 import com.example.contactsapp.data.ContactRepositoryImpl
 import com.example.contactsapp.data.module.FakeContact
+import io.realm.Realm
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -15,7 +16,7 @@ class ExampleUnitTest {
 
     @Test
     fun testViewModel() {
-        val contactRepository = ContactRepositoryImpl()
+        val contactRepository = ContactRepositoryImpl(Realm.getDefaultInstance())
 
         val phone = "+88005553535"
 
@@ -25,8 +26,8 @@ class ExampleUnitTest {
             phone = "88005553535"
         )
 
-        contactRepository.addContact(contact)
-        val list = contactRepository.getAllContact()
+        contactRepository.addContacts(contact)
+        val list = contactRepository.getAllContacts()
         val lastContact = list.last()
 
         assertEquals(contact, lastContact)
