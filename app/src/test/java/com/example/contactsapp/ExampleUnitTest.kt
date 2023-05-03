@@ -1,5 +1,7 @@
 package com.example.contactsapp
 
+import com.example.contactsapp.data.ContactRepositoryImpl
+import com.example.contactsapp.data.module.FakeContact
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -10,8 +12,24 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun testViewModel() {
+        val contactRepository = ContactRepositoryImpl()
+
+        val phone = "+88005553535"
+
+        val contact = FakeContact(
+            name = "Stas",
+            surname = "Qmar",
+            phone = "88005553535"
+        )
+
+        contactRepository.addContact(contact)
+        val list = contactRepository.getAllContact()
+        val lastContact = list.last()
+
+        assertEquals(contact, lastContact)
+        assertNotEquals(phone, lastContact.phone)
     }
 }
