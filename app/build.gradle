@@ -7,9 +7,9 @@ plugins {
 
 android {
     compileSdk 31
+    namespace 'com.example.namespace'
 
     defaultConfig {
-        namespace 'com.example.namespace'
         applicationId "com.example.contactsapp"
         minSdk 23
         targetSdk 31
@@ -20,26 +20,113 @@ android {
     }
 
     buildTypes {
+        def someProperty1 = true
+        def someProperty2 = false
+
+        def should_encrypt_prefs_field_name = "SHOULD_ENCRYPT_PREFS"
+
         release {
             minifyEnabled false
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [
+                    crashlyticsCollectionEnabled: "true",
+                    applicationIdSuffix          : "",
+                    someProperty1               : someProperty1,
+                    someProperty2               : someProperty2
+            ]
+            buildConfigField "String", "APPLICATION_ID_SUFFIX", "\"\""
+            buildConfigField "boolean", "IS_ANALYTICS_ENABLED", "true"
+            buildConfigField "boolean", should_encrypt_prefs_field_name, "true"
+        }
+
+        staging {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [
+                    crashlyticsCollectionEnabled: "false",
+                    applicationIdSuffix          : ".staging",
+                    someProperty1               : someProperty1,
+                    someProperty2               : someProperty2
+            ]
+            applicationIdSuffix ".staging"
+            versionNameSuffix  '-staging'
+            buildConfigField "String", "APPLICATION_ID_SUFFIX", "\".staging\""
+            buildConfigField "boolean", "IS_ANALYTICS_ENABLED", "true"
+            buildConfigField "boolean", should_encrypt_prefs_field_name, "true"
+        }
+        debug {
+            debuggable true
+            manifestPlaceholders = [
+                    crashlyticsCollectionEnabled: "false",
+                    applicationIdSuffix          : ".debug",
+                    someProperty1               : someProperty1,
+                    someProperty2               : someProperty2
+            ]
+            applicationIdSuffix ".debug"
+            versionNameSuffix  '-debug'
+            buildConfigField "String", "APPLICATION_ID_SUFFIX", "\".debug\""
+            buildConfigField "boolean", "IS_ANALYTICS_ENABLED", "true"
+            buildConfigField "boolean", should_encrypt_prefs_field_name, "false"
         }
     }
+
+    sourceSets {
+        release {
+            java.srcDirs = ['src/releas/java']
+            res.srcDirs = ['src/releas/res']
+        }
+        release {
+            manifest.srcFile 'src/debug/AndroidManifest.xml'
+            java.srcDirs = ['src/debug/java']
+            res.srcDirs = ['src/debug/res']
+        }
+        debug {
+            manifest.srcFile 'src/debug/AndroidManifest.xml'
+            java.srcDirs = ['src/debug/java']
+            res.srcDirs = ['src/debug/res']
+        }
+    }
+
+    flavorDimensions 'api', 'version'
+
+    productFlavors {
+        demo {
+            dimension 'version'
+        }
+
+        full {
+            dimension 'version'
+        }
+
+        minApi24 {
+            dimension 'api'
+            minSdkVersion '24'
+            versionNameSuffix "-minApi24"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    lintOptions{
+        checkReleaseBuilds false
+        abortOnError true
     }
     buildFeatures {
         viewBinding true
+        dataBinding true
     }
 }
 
 dependencies {
 
-    implementation 'androidx.leanback:leanback:1.0.0'
     def koin_version = '3.1.5'
 
     implementation 'androidx.core:core-ktx:1.7.0'
